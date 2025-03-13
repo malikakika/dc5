@@ -1,0 +1,22 @@
+{
+    "name": "Decathlon Move",
+    "short_name": "Move",
+    "description": "Application Decathlon pour la marche et le jogging",
+    "icons": [
+      {
+        "src": "/icons/icon.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icon.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#ffffff",
+    "theme_color": "#3498db",
+    "display": "standalone"
+  }
+  
