@@ -19,7 +19,7 @@ const Container = styled.div`
 const StepCounterBox = styled.div`
   margin: 20px 0;
   padding: 15px;
-  background: #3498db;
+  background: #3646BA;
   color: white;
   font-size: 1.5rem;
   font-weight: bold;
@@ -28,16 +28,30 @@ const StepCounterBox = styled.div`
   width: 200px;
 `;
 
+const MapWrapper = styled.div`
+  width: 100%;
+  max-width: 500px;
+  height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 // 📌 Icône personnalisée pour le marqueur
 const customIcon = new L.Icon({
   iconUrl: "https://leafletjs.com/examples/custom-icons/leaf-green.png",
   iconSize: [38, 38],
 });
 
-// 📌 Composant pour recentrer la carte sur la position de l'utilisateur
+// 📌 Composant pour recentrer la carte automatiquement
 function ChangeView({ coords }: { coords: [number, number] }) {
   const map = useMap();
-  map.setView(coords, 16);
+  useEffect(() => {
+    map.setView(coords, 16);
+  }, [coords, map]);
   return null;
 }
 
@@ -45,43 +59,43 @@ function ChangeView({ coords }: { coords: [number, number] }) {
 export default function PageContent() {
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [steps, setSteps] = useState(0);
-  const [isClient, setIsClient] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
   const stepsRef = useRef(0);
 
   useEffect(() => {
-    setIsClient(true);
-
     // 📌 Activation de la géolocalisation
     if ("geolocation" in navigator) {
       navigator.geolocation.watchPosition(
         (pos) => {
           setPosition([pos.coords.latitude, pos.coords.longitude]);
+          setGeoError(null);
         },
-        (error) => console.error("Erreur de géolocalisation :", error),
+        (error) => {
+          console.error("Erreur de géolocalisation :", error);
+          setGeoError("⚠️ Impossible d'accéder à la géolocalisation !");
+        },
         { enableHighAccuracy: true }
       );
+    } else {
+      setGeoError("⚠️ La géolocalisation n'est pas supportée par votre appareil.");
     }
 
-    // 📌 Activation du compteur de pas
     if (typeof window !== "undefined" && "DeviceMotionEvent" in window) {
       let lastAcceleration = 0;
 
       const handleMotion = (event: DeviceMotionEvent) => {
         const acc = event.accelerationIncludingGravity;
-        
         if (acc) {
           const totalAcceleration = Math.sqrt(
             Math.pow(acc.x || 0, 2) +
-            Math.pow(acc.y || 0, 2) +
-            Math.pow(acc.z || 0, 2)
+              Math.pow(acc.y || 0, 2) +
+              Math.pow(acc.z || 0, 2)
           );
 
-          // 📌 Seuil d'accélération pour détecter un pas
           if (Math.abs(totalAcceleration - lastAcceleration) > 2) {
             stepsRef.current += 1;
             setSteps(stepsRef.current);
           }
-
           lastAcceleration = totalAcceleration;
         }
       };
@@ -89,7 +103,7 @@ export default function PageContent() {
       window.addEventListener("devicemotion", handleMotion);
       return () => window.removeEventListener("devicemotion", handleMotion);
     }
-  }, [steps]); // 📌 Mise à jour en fonction des pas détectés
+  }, []);
 
   return (
     <Container>
@@ -98,18 +112,20 @@ export default function PageContent() {
       {/* 📌 Affichage du compteur de pas */}
       <StepCounterBox>👣 Pas : {steps}</StepCounterBox>
 
-      {/* 📌 Affichage de la carte */}
-      <div style={{ width: "100%", maxWidth: "500px", height: "400px", borderRadius: "8px", overflow: "hidden" }}>
-        {isClient && position ? (
+      {/* 📌 Affichage de la carte avec la position */}
+      <MapWrapper>
+        {geoError ? (
+          <p>{geoError}</p>
+        ) : position ? (
           <MapContainer center={position} zoom={16} style={{ width: "100%", height: "100%" }}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <Marker position={position} icon={customIcon} />
             <ChangeView coords={position} />
           </MapContainer>
         ) : (
-          <p className="text-center">📡 Localisation en cours...</p>
+          <p>📡 Localisation en cours...</p>
         )}
-      </div>
+      </MapWrapper>
     </Container>
   );
 }
