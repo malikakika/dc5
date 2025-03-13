@@ -14,6 +14,11 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
+  "ignore": [
+    "**/.open-next/**",
+    "**/node_modules/**",
+    "**/.netlify/**"
+  ],
   "nxCloudId": "67d2b88c910d782f7137b02c",
   "plugins": [
     {
@@ -48,4 +53,5 @@
       }
     }
   }
+  
 }
