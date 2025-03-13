@@ -1,6 +1,5 @@
 //@ts-check
 
- 
 const { composePlugins, withNx } = require('@nx/next');
 const withPWA = require('next-pwa')({  
   dest: 'public',
@@ -18,16 +17,12 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
-  pwa: {
-    dest: "public",
-    register: true,
-    skipWaiting: true,
-  }
+  // 🚨 Enlève la propriété `pwa` d'ici, car elle est déjà configurée plus haut.
 };
 
 const plugins = [
   withNx,
-  withPWA // Ajout du support PWA 🚀
+  withPWA // ✅ Ajout correct du support PWA 🚀
 ];
 
 module.exports = composePlugins(...plugins)(nextConfig);
