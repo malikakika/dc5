@@ -2,7 +2,10 @@
   "name": "@dcdecath/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+"scripts": {
+  "build": "npm install --legacy-peer-deps && npx nx build dcdecath",
+  "start": "npx nx start dcdecath"
+},
   "private": true,
   "dependencies": {
     "leaflet": "^1.9.4",
