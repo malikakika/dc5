@@ -36,8 +36,9 @@
     "**/*.tsx",
     "../../apps/dcdecath/.next/types/**/*.ts",
     "../../dist/apps/dcdecath/.next/types/**/*.ts",
+    ".next/types/**/*.ts",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
+    "../../.next/.next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
